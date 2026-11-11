@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUAHEMA | El Mundo de los Libros</title>
+
+<style>
+:root {
+  --fondo:#F7F2FA;
+  --morado:#6D597A;
+  --lila:#CDB4DB;
+  --texto:#4A4052;
+  --rosa:#F0E1EA;
+  --blanco:#FFFDFB;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,sans-serif;background:var(--fondo);color:var(--texto)}
+.nota{text-align:center;padding:8px;background:var(--rosa)}
+.nota h4{margin:5px}
+header{text-align:center;padding:25px 15px;background:var(--lila)}
+.logo-luahema{width:150px;max-width:100%;border-radius:50%}
+header h1{font:bold 42px Georgia,serif;color:var(--morado);letter-spacing:3px;margin:10px}
+.navbar{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;background:var(--morado);padding:8px;position:sticky;top:0;z-index:10}
+.navbar a{padding:13px 15px;color:white;text-decoration:none;border-radius:8px;cursor:pointer}
+.navbar a:hover,.navbar a.activo{background:var(--lila);color:var(--texto)}
+main{max-width:1200px;margin:auto;padding:20px}
+.pagina{display:none}
+.pagina.activa{display:block;animation:entrada .25s ease}
+@keyframes entrada{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+h2,h3{color:var(--morado)}
+h2{font-family:Georgia,serif}
+.hero{background:white;text-align:center;padding:35px 20px;border-radius:15px;margin-bottom:25px}
+.hero h2{font-size:32px}
+.hero p{max-width:700px;margin:15px auto;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:20px 0}
+.tarjeta{background:white;border:1px solid #D8C2D8;border-radius:13px;padding:18px;text-align:center;box-shadow:0 3px 10px #6D597A12;transition:transform .2s}
+.tarjeta:hover{transform:translateY(-4px)}
+.tarjeta img{width:150px;height:190px;object-fit:contain;background:#F7F2FA;border-radius:5px;max-width:100%}
+.tarjeta p{line-height:1.5;font-size:14px}
+.categoria{background:white;border:1px solid var(--lila);padding:15px;border-radius:12px;text-align:center}
+.categoria img{width:100%;height:150px;object-fit:contain}
+button,.boton{display:inline-block;border:none;border-radius:8px;background:var(--morado);color:white;padding:11px 15px;margin:5px 3px;font-size:14px;cursor:pointer;text-decoration:none}
+button:hover,.boton:hover{background:var(--lila);color:var(--texto)}
+button.secundario{background:var(--rosa);color:var(--morado)}
+.precio{color:var(--morado);font-size:20px;font-weight:bold}
+.barra{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+input,select{max-width:100%;padding:11px;border:1px solid var(--lila);border-radius:7px;font:inherit;color:var(--texto);background:white}
+.barra input{flex:1;min-width:180px}
+.panel{background:white;padding:20px;margin:18px 0;border-radius:12px;border:1px solid #E6D5E8}
+.fila{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 0;border-bottom:1px solid #E6D5E8}
+.cantidad-carrito{width:75px}
+.formulario{background:var(--rosa);padding:20px;margin-top:20px;border-radius:12px}
+.formulario label{display:block;margin:12px 0 5px;font-weight:bold}
+.formulario input,.formulario select{width:100%}
+.pago-box{background:white;border:1px solid var(--lila);border-radius:10px;padding:15px;margin:15px 0}
+.pago-info{background:var(--fondo);padding:15px;margin-top:12px;border-radius:8px}
+.resumen{background:#E8D8E8;padding:18px;border-radius:10px}
+.mensaje{line-height:1.8;overflow-wrap:anywhere}
+.vacio{background:white;text-align:center;padding:25px;border-radius:12px}
+.estado-cambio{color:var(--morado);font-size:13px}
+footer{text-align:center;padding:25px;background:#D8C2D8}
+
+/* TICKET */
+.ticket{max-width:650px;margin:25px auto;padding:25px;background:#FFFDFB;border:2px dashed var(--morado);border-radius:12px;box-shadow:0 5px 18px #6D597A20}
+.ticket-encabezado{text-align:center;border-bottom:2px dashed var(--lila);padding-bottom:15px}
+.ticket-encabezado h2{font-size:34px;letter-spacing:4px;margin:5px}
+.ticket-estado{display:inline-block;background:#E8D8E8;color:var(--morado);padding:9px 18px;border-radius:20px;font-weight:bold;margin:12px}
+.ticket-datos{padding:15px 0;border-bottom:1px dashed var(--lila);line-height:1.8;overflow-wrap:anywhere}
+.ticket-productos{width:100%;border-collapse:collapse;margin:15px 0}
+.ticket-productos th,.ticket-productos td{padding:10px 5px;border-bottom:1px solid #E6D5E8;text-align:left}
+.ticket-productos th:last-child,.ticket-productos td:last-child{text-align:right}
+.ticket-total{background:var(--rosa);padding:15px;border-radius:8px;margin-top:15px}
+.ticket-total p{display:flex;justify-content:space-between}
+.ticket-total h2{text-align:right}
+.ticket-final{text-align:center;padding-top:20px;line-height:1.7}
+#ticketCompra{display:none}
+.error-dato{border:2px solid #B3261E!important;background:#FFF5F5!important}
+@media(max-width:600px){
+ header h1{font-size:32px}
+ .navbar{position:relative}
+ .navbar a{padding:11px 9px}
+ main{padding:12px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .tarjeta{padding:10px 6px}
+ .tarjeta img{height:145px}
+ .hero h2{font-size:26px}
+ .ticket{padding:14px}
+ .ticket-productos{font-size:12px}
+}
+@media print{
+ body *{visibility:hidden}
+ #ticketCompra,#ticketCompra *{visibility:visible}
+ #ticketCompra{display:block!important;position:absolute;left:0;top:0;width:100%;margin:0}
+ .no-imprimir{display:none!important}
+ .ticket{box-shadow:none;max-width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="nota"><h4>Descubre el maravilloso mundo de los libros</h4></div>
+
+<header>
+<img src="logo-luahema.png" alt="Logo Luahema" class="logo-luahema" onerror="this.style.display='none'">
+<h1>LUAHEMA</h1>
+<p>El Mundo de los Libros</p>
+<p>Un espacio para descubrir historias, autores y nuevos libros.</p>
+</header>
+
+<nav class="navbar">
+<a href="#inicio" data-pagina="inicio" class="activo">Inicio</a>
+<a href="#novelas" data-pagina="novelas">Novelas</a>
+<a href="#autores" data-pagina="autores">Autores</a>
+<a href="#recomendaciones" data-pagina="recomendaciones">Recomendaciones</a>
+<a href="#comprar" data-pagina="comprar">Comprar</a>
+<a href="#carrito" data-pagina="carrito">Carrito (<span id="contadorCarrito">0</span>)</a>
+</nav>
+
+<main>
+
+<section id="inicio" class="pagina activa">
+<div class="hero">
+<h2>Bienvenidos a Luahema</h2>
+<p>Un lugar para los amantes de la lectura, donde puedes descubrir diferentes géneros, conocer escritores y encontrar tu próxima historia.</p>
+<button onclick="irA('novelas')">Explorar novelas</button>
+<button class="secundario" onclick="irA('recomendaciones')">Ver recomendaciones</button>
+</div>
+<h2>Libros destacados</h2>
+<div class="grid" id="destacados"></div>
+</section>
+
+<section id="novelas" class="pagina">
+<h2>Novelas</h2>
+<p>Explora los géneros literarios de Luahema.</p>
+<div class="grid">
+<div class="categoria"><img src="fantasia.jpg" alt="Fantasía"><h3>Fantasía</h3><p>Mundos mágicos y aventuras increíbles.</p><button onclick="filtrar('Fantasía')">Ver libros</button></div>
+<div class="categoria"><img src="misterio.jpg" alt="Misterio"><h3>Misterio</h3><p>Secretos, pistas y enigmas.</p><button onclick="filtrar('Misterio')">Ver libros</button></div>
+<div class="categoria"><img src="romance.jpg" alt="Romance"><h3>Romance</h3><p>Relaciones y sentimientos.</p><button onclick="filtrar('Romance')">Ver libros</button></div>
+<div class="categoria"><img src="aventura.jpg" alt="Aventura"><h3>Aventura</h3><p>Viajes y descubrimientos.</p><button onclick="filtrar('Aventura')">Ver libros</button></div>
+<div class="categoria"><img src="terror.jpg" alt="Terror"><h3>Terror</h3><p>Historias inquietantes.</p><button onclick="filtrar('Terror')">Ver libros</button></div>
+<div class="categoria"><img src="cienciaficcion.jpg" alt="Ciencia ficción"><h3>Ciencia ficción</h3><p>Tecnología y mundos imaginarios.</p><button onclick="filtrar('Ciencia ficción')">Ver libros</button></div>
+<div class="categoria"><img src="historica.jpg" alt="Novela histórica"><h3>Novela histórica</h3><p>Relatos de otras épocas.</p><button onclick="filtrar('Novela histórica')">Ver libros</button></div>
+<div class="categoria"><img src="juvenil.jpg" alt="Juvenil"><h3>Novela juvenil</h3><p>Amistad y nuevas experiencias.</p><button onclick="filtrar('Juvenil')">Ver libros</button></div>
+</div>
+<h2>Catálogo de libros</h2>
+<div class="barra">
+<input id="busqueda" type="search" placeholder="Buscar por título o autor">
+<select id="filtroGenero">
+<option value="">Todos los géneros</option>
+<option>Romance</option><option>Misterio</option><option>Aventura</option>
+<option>Terror</option><option>Fantasía</option><option>Clásico</option><option>Ficción</option>
+</select>
+</div>
+<div id="catalogo" class="grid"></div>
+</section>
+
+<section id="autores" class="pagina">
+<h2>Autores</h2>
+<p>Selecciona un autor para conocer su obra destacada.</p>
+<div id="catalogoAutores" class="grid"></div>
+</section>
+
+<section id="fichaAutor" class="pagina">
+<button class="secundario" onclick="irA('autores')">Volver a autores</button>
+<div id="detalleAutor" class="panel"></div>
+</section>
+
+<section id="fichaLibro" class="pagina">
+<button class="secundario" onclick="irA('comprar')">Volver al catálogo</button>
+<div id="detalleLibro" class="panel"></div>
+</section>
+
+<section id="recomendaciones" class="pagina">
+<h2>Recomendaciones</h2>
+<p>Una selección de historias para descubrir tu próxima lectura.</p>
+<div id="listaRecomendaciones" class="grid"></div>
+</section>
+
+<section id="comprar" class="pagina">
+<h2>Comprar libros</h2>
+<p>Consulta los precios y agrega tus libros al carrito.</p>
+<div class="panel">
+<h3>Moneda de visualización</h3>
+<label for="moneda">Selecciona tu moneda:</label>
+<select id="moneda">
+<option value="MXN">🇲🇽 Peso mexicano (MXN)</option>
+<option value="USD">🇺🇸 Dólar estadounidense (USD)</option>
+<option value="EUR">🇪🇺 Euro (EUR)</option>
+<option value="GBP">🇬🇧 Libra esterlina (GBP)</option>
+<option value="CAD">🇨🇦 Dólar canadiense (CAD)</option>
+</select>
+<p id="estadoCambio" class="estado-cambio">Consultando tipos de cambio...</p>
+</div>
+<div id="catalogoCompra" class="grid"></div>
+</section>
+
+<section id="carrito" class="pagina">
+<h2>Mi carrito</h2>
+<div class="panel">
+<div id="listaCarrito"></div>
+<hr>
+<h3>Total: <span id="totalCarrito">$0.00 MXN</span></h3>
+<button class="secundario" onclick="vaciarCarrito()">Vaciar carrito</button>
+<button onclick="irAComprar()">Continuar con la compra</button>
+</div>
+
+<div class="formulario" id="formularioCompra" style="display:none">
+<h2>Finalizar compra</h2>
+<div class="resumen">
+<h3>Resumen de tus libros</h3>
+<div id="resumenCarrito"></div>
+<p>Subtotal: <span id="subtotalCompra"></span></p>
+</div>
+
+<!-- novalidate evita que el navegador bloquee el evento submit -->
+<form id="formPedido" novalidate>
+
+<div class="pago-box">
+<h3>1. Datos del cliente</h3>
+<label for="nombre">Nombre completo</label>
+<input id="nombre" type="text" maxlength="100" autocomplete="name">
+
+<label for="correo">Correo electrónico</label>
+<input id="correo" type="email" autocomplete="email">
+
+<label for="telefono">Teléfono</label>
+<input id="telefono" type="tel" autocomplete="tel">
+</div>
+
+<div class="pago-box">
+<h3>2. Datos de envío</h3>
+<label for="direccion">Dirección</label>
+<input id="direccion" type="text" autocomplete="street-address">
+
+<label for="ciudad">Ciudad</label>
+<input id="ciudad" type="text" autocomplete="address-level2">
+
+<label for="cp">Código postal</label>
+<input id="cp" type="text" inputmode="numeric" maxlength="10" autocomplete="postal-code">
+
+<label for="envio">Tipo de envío</label>
+<select id="envio">
+<option value="60">Envío estándar - $60 MXN</option>
+<option value="120">Envío exprés - $120 MXN</option>
+</select>
+</div>
+
+<div class="pago-box">
+<h3>3. Moneda de pago</h3>
+<label for="monedaCheckout">Selecciona tu moneda:</label>
+<select id="monedaCheckout">
+<option value="MXN">🇲🇽 Peso mexicano (MXN)</option>
+<option value="USD">🇺🇸 Dólar estadounidense (USD)</option>
+<option value="EUR">🇪🇺 Euro (EUR)</option>
+<option value="GBP">🇬🇧 Libra esterlina (GBP)</option>
+<option value="CAD">🇨🇦 Dólar canadiense (CAD)</option>
+</select>
+<p id="estadoCambioCheckout" class="estado-cambio"></p>
+</div>
+
+<div class="pago-box">
+<h3>4. Forma de pago</h3>
+<label for="formaPago">Selecciona un método</label>
+<select id="formaPago">
+<option value="">Selecciona una opción</option>
+<option value="tarjeta">Tarjeta de crédito o débito</option>
+<option value="transferencia">Transferencia bancaria</option>
+<option value="paypal">PayPal</option>
+<option value="efectivo">Efectivo al recoger</option>
+<option value="credito">Compra a crédito</option>
+</select>
+
+<div id="datosTarjeta" class="pago-info" hidden>
+<h3>Pago con tarjeta</h3>
+<p>Esta demostración no procesa tarjetas reales. Se necesita integrar una pasarela de pago.</p>
+</div>
+<div id="datosTransferencia" class="pago-info" hidden>
+<h3>Transferencia bancaria</h3>
+<p>Los datos bancarios deben ser configurados por el responsable de la tienda.</p>
+</div>
+<div id="datosPaypal" class="pago-info" hidden>
+<h3>PayPal</h3>
+<p>Se requiere integrar la plataforma oficial para procesar pagos.</p>
+</div>
+<div id="datosEfectivo" class="pago-info" hidden>
+<h3>Pago en efectivo</h3>
+<p>Pago al recoger el pedido en el establecimiento.</p>
+</div>
+<div id="datosCredito" class="pago-info" hidden>
+<h3>Compra a crédito</h3>
+<label for="plazo">Plazo</label>
+<select id="plazo"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select>
+<p id="mensualidad"></p>
+<p>Importe informativo, sin intereses ni comisiones.</p>
+</div>
+</div>
+
+<div class="resumen">
+<h3>5. Resumen final</h3>
+<p>Subtotal: <span id="subtotalFinal"></span></p>
+<p>Envío: <span id="envioFinal"></span></p>
+<h2>Total: <span id="totalFinal"></span></h2>
+</div>
+
+<div class="pago-box">
+<h3>6. Confirmar pedido</h3>
+<p>Esta es una demostración educativa. No se procesan pagos reales.</p>
+<button type="submit">Confirmar compra</button>
+<button type="button" class="secundario" onclick="cancelarCompra()">Cancelar</button>
+</div>
+</form>
+</div>
+
+<div id="ticketCompra"></div>
+</section>
+
+</main>
+
+<footer>
+<h2>LUAHEMA</h2>
+<p>Un espacio para descubrir nuevas historias.</p>
+<p>© 2026 Luahema</p>
+<button class="secundario" onclick="irA('inicio')">Volver al inicio</button>
+</footer>
+
+<script>
+"use strict";
+
+// CATÁLOGO
+const libros=[
+{titulo:"Orgullo y prejuicio",autor:"Jane Austen",precio:250,imagen:"orgullo-prejuicio.jpg",genero:"Romance",descripcion:"Una novela sobre el amor, los prejuicios y las diferencias sociales."},
+{titulo:"Cien años de soledad",autor:"Gabriel García Márquez",precio:320,imagen:"cien-anos.jpg",genero:"Ficción",descripcion:"Una historia familiar ambientada en el pueblo ficticio de Macondo."},
+{titulo:"La isla del tesoro",autor:"Robert Louis Stevenson",precio:280,imagen:"Laisladeltesoro.jpg",genero:"Aventura",descripcion:"Un joven se embarca en la búsqueda de un tesoro pirata."},
+{titulo:"Asesinato en el Orient Express",autor:"Agatha Christie",precio:230,imagen:"asesinato-orient.jpg",genero:"Misterio",descripcion:"Un detective investiga un misterioso asesinato durante un viaje en tren."},
+{titulo:"El retrato de Dorian Gray",autor:"Oscar Wilde",precio:210,imagen:"retrato-dorian.jpg",genero:"Clásico",descripcion:"Una novela sobre la belleza, la juventud y las consecuencias de las decisiones."},
+{titulo:"Ojalá esta fuera nuestra historia de amor",autor:"Andrea Longarela",precio:398,imagen:"Ojaláestafueranuestrahistoriadeamor.jpg",genero:"Romance",descripcion:"Una historia romántica para descubrir a través de sus páginas."},
+{titulo:"Tan poca vida",autor:"Hanya Yanagihara",precio:699,imagen:"Tanpocavida.jpg",genero:"Ficción",descripcion:"Una novela centrada en la amistad y las experiencias de un grupo de amigos."},
+{titulo:"Eres el amor de mi otra vida",autor:"Gilraen Eärfalas",precio:448,imagen:"Ereselamordemiotravida.jpg",genero:"Romance",descripcion:"Una historia de amor escrita por Gilraen Eärfalas."},
+{titulo:"Cumbres borrascosas",autor:"Emily Jane Brontë",precio:345.93,imagen:"Cumbresborrascosas.jpg",genero:"Romance",descripcion:"Una novela clásica de pasiones y conflictos familiares."},
+{titulo:"It",autor:"Stephen King",precio:null,imagen:"it.jpg",genero:"Terror",descripcion:"Una historia de terror y misterio."},
+{titulo:"El principito",autor:"Antoine de Saint-Exupéry",precio:null,imagen:"principito.jpg",genero:"Ficción",descripcion:"Una historia que reflexiona sobre la amistad y la infancia."},
+{titulo:"Alicia en el país de las maravillas",autor:"Lewis Carroll",precio:null,imagen:"alicia.jpg",genero:"Fantasía",descripcion:"Una joven descubre un mundo fantástico lleno de personajes sorprendentes."}
+];
+
+const autores=[
+{nombre:"V. E. Schwab",imagen:"V.E.Schwab.jpg",descripcion:"Victoria Schwab es una escritora conocida por sus obras de fantasía.",obra:"La vida invisible de Addie LaRue"},
+{nombre:"Alice Kellen",imagen:"AliceKellen.jpg",descripcion:"Escritora española de literatura romántica juvenil y adulta.",obra:"Nosotros en la luna"},
+{nombre:"Holly Jackson",imagen:"HollyJackson.jpg",descripcion:"Autora británica conocida por sus novelas de misterio.",obra:"Asesinato para principiantes"},
+{nombre:"Casey McQuiston",imagen:"CaseyMcQuiston.jpg",descripcion:"Escritora estadounidense de novela romántica contemporánea.",obra:"Rojo, blanco y sangre azul"},
+{nombre:"Jenny Han",imagen:"JennyHan.jpg",descripcion:"Escritora estadounidense de literatura infantil y juvenil.",obra:"El verano en que me enamoré"},
+{nombre:"Oscar Wilde",imagen:"oscar-wilde.jpg",descripcion:"Escritor irlandés conocido por sus novelas, cuentos y obras teatrales.",obra:"El retrato de Dorian Gray"}
+];
+
+let carrito=[];
+let monedaSeleccionada="MXN";
+
+let tasasCambio={MXN:1,USD:0.058,EUR:0.053,GBP:0.046,CAD:0.081};
+const nombresMonedas={MXN:"pesos mexicanos",USD:"dólares estadounidenses",EUR:"euros",GBP:"libras esterlinas",CAD:"dólares canadienses"};
+
+function dineroMoneda(cantidad){
+ return new Intl.NumberFormat("es-MX",{style:"currency",currency:monedaSeleccionada}).format(cantidad*tasasCambio[monedaSeleccionada]);
+}
+
+function escapar(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// MONEDAS
+function cambiarMoneda(){
+ monedaSeleccionada=document.getElementById("moneda").value;
+ document.getElementById("monedaCheckout").value=monedaSeleccionada;
+ actualizarPrecios();
+}
+function cambiarMonedaCheckout(){
+ monedaSeleccionada=document.getElementById("monedaCheckout").value;
+ document.getElementById("moneda").value=monedaSeleccionada;
+ actualizarPrecios();
+}
+async function cargarTasasCambio(){
+ const estado=document.getElementById("estadoCambio");
+ try{
+  const respuesta=await fetch("https://open.er-api.com/v6/latest/MXN");
+  if(!respuesta.ok)throw new Error("Sin conexión");
+  const datos=await respuesta.json();
+  if(datos.result!=="success")throw new Error("Cambio no disponible");
+  ["USD","EUR","GBP","CAD"].forEach(m=>{if(datos.rates[m])tasasCambio[m]=datos.rates[m]});
+  estado.textContent="Tipos de cambio actualizados. Moneda base: MXN.";
+ }catch(e){
+  estado.textContent="Se utilizan tipos de cambio de referencia.";
+ }
+ document.getElementById("estadoCambioCheckout").textContent=estado.textContent;
+ actualizarPrecios();
+}
+
+// NAVEGACIÓN
+function irA(id){
+ const seccion=document.getElementById(id);
+ if(!seccion)return;
+ document.querySelectorAll(".pagina").forEach(p=>p.classList.remove("activa"));
+ seccion.classList.add("activa");
+ document.querySelectorAll(".navbar a").forEach(a=>a.classList.toggle("activo",a.dataset.pagina===id));
+ history.replaceState(null,"","#"+id);
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(id==="carrito")actualizarCarrito();
+ if(id==="comprar")mostrarCatalogoCompra();
+}
+document.querySelectorAll(".navbar a").forEach(a=>{
+ a.addEventListener("click",e=>{e.preventDefault();irA(a.dataset.pagina)});
+});
+
+// CATÁLOGOS
+function tarjetaLibro(l){
+ return `<article class="tarjeta">
+ <img src="${escapar(l.imagen)}" alt="${escapar(l.titulo)}">
+ <h3>${escapar(l.titulo)}</h3><p>${escapar(l.autor)}</p><p>${escapar(l.genero)}</p>
+ <p class="precio">${l.precio===null?"Consultar precio":dineroMoneda(l.precio)}</p>
+ <button onclick="verLibro('${escapar(l.titulo)}')">Ver detalles</button>
+ ${l.precio!==null?`<button onclick="agregarCarrito('${escapar(l.titulo)}')">Agregar al carrito</button>`:""}
+ </article>`;
+}
+function mostrarCatalogo(){
+ const q=document.getElementById("busqueda").value.toLowerCase().trim();
+ const g=document.getElementById("filtroGenero").value;
+ const encontrados=libros.filter(l=>(l.titulo.toLowerCase().includes(q)||l.autor.toLowerCase().includes(q))&&(!g||l.genero===g));
+ document.getElementById("catalogo").innerHTML=encontrados.length?encontrados.map(tarjetaLibro).join(""):"<div class='vacio'>No se encontraron libros.</div>";
+}
+function filtrar(genero){
+ irA("novelas");
+ document.getElementById("busqueda").value="";
+ document.getElementById("filtroGenero").value=genero;
+ mostrarCatalogo();
+}
+function mostrarCatalogoCompra(){
+ document.getElementById("catalogoCompra").innerHTML=libros.filter(l=>l.precio!==null).map(tarjetaLibro).join("");
+}
+function mostrarDestacados(){document.getElementById("destacados").innerHTML=libros.slice(0,4).map(tarjetaLibro).join("")}
+function mostrarRecomendaciones(){document.getElementById("listaRecomendaciones").innerHTML=[libros[0],libros[1],libros[2],libros[3],libros[4],libros[10],libros[11]].map(tarjetaLibro).join("")}
+
+// AUTORES
+function mostrarAutores(){
+ document.getElementById("catalogoAutores").innerHTML=autores.map(a=>`
+ <article class="tarjeta"><img src="${escapar(a.imagen)}" alt="${escapar(a.nombre)}">
+ <h3>${escapar(a.nombre)}</h3><p>${escapar(a.descripcion)}</p>
+ <button onclick="verAutor('${escapar(a.nombre)}')">Conocer autor</button></article>`).join("");
+}
+function verAutor(nombre){
+ const a=autores.find(x=>x.nombre===nombre);
+ if(!a)return;
+ const obras=libros.filter(l=>l.autor===nombre);
+ document.getElementById("detalleAutor").innerHTML=`
+ <div style="text-align:center"><img src="${escapar(a.imagen)}" alt="${escapar(a.nombre)}" style="width:150px;height:150px;object-fit:cover">
+ <h2>${escapar(a.nombre)}</h2><p>${escapar(a.descripcion)}</p><h3>Obra destacada</h3><p>${escapar(a.obra)}</p>
+ ${obras.length?`<h3>Libros disponibles</h3><div class="grid">${obras.map(tarjetaLibro).join("")}</div>`:"<p>Consulta su obra destacada para descubrir más.</p>"}</div>`;
+ irA("fichaAutor");
+}
+
+// FICHA LIBRO
+function verLibro(titulo){
+ const l=libros.find(x=>x.titulo===titulo);
+ if(!l)return;
+ document.getElementById("detalleLibro").innerHTML=`
+ <div style="text-align:center"><img src="${escapar(l.imagen)}" alt="${escapar(l.titulo)}" style="width:180px;max-width:100%;max-height:260px;object-fit:contain">
+ <h2>${escapar(l.titulo)}</h2><p>Autor: ${escapar(l.autor)}</p><p>Género: ${escapar(l.genero)}</p>
+ <p>${escapar(l.descripcion)}</p><h3>${l.precio===null?"Precio por confirmar":dineroMoneda(l.precio)}</h3>
+ ${l.precio!==null?`<button onclick="agregarCarrito('${escapar(l.titulo)}')">Agregar al carrito</button>`:""}</div>`;
+ irA("fichaLibro");
+}
+
+// CARRITO
+function agregarCarrito(titulo){
+ const l=libros.find(x=>x.titulo===titulo);
+ if(!l||l.precio===null)return;
+ const existente=carrito.find(x=>x.titulo===titulo);
+ if(existente)existente.cantidad++;
+ else carrito.push({...l,cantidad:1});
+ actualizarCarrito();
+ alert("Libro agregado al carrito.");
+}
+function cambiarCantidad(i,cantidad){
+ if(!carrito[i])return;
+ carrito[i].cantidad=Math.max(1,Math.min(20,Number(cantidad)||1));
+ actualizarCarrito();
+}
+function eliminarLibro(i){carrito.splice(i,1);actualizarCarrito()}
+function vaciarCarrito(){
+ if(carrito.length&&confirm("¿Quieres vaciar el carrito?")){
+  carrito=[];actualizarCarrito();
+ }
+}
+function subtotal(){return carrito.reduce((s,l)=>s+l.precio*l.cantidad,0)}
+
+function actualizarCarrito(){
+ const lista=document.getElementById("listaCarrito");
+ document.getElementById("contadorCarrito").textContent=carrito.reduce((s,l)=>s+l.cantidad,0);
+ if(!carrito.length){
+  lista.innerHTML=`<div class="vacio"><p>Tu carrito está vacío.</p><button onclick="irA('comprar')">Explorar libros</button></div>`;
+ }else{
+  lista.innerHTML=carrito.map((l,i)=>`
+  <div class="fila"><div><strong>${escapar(l.titulo)}</strong><p>${dineroMoneda(l.precio)} por libro</p><p>Subtotal: ${dineroMoneda(l.precio*l.cantidad)}</p></div>
+  <div><label>Cantidad <input class="cantidad-carrito" type="number" min="1" max="20" value="${l.cantidad}" onchange="cambiarCantidad(${i},this.value)"></label>
+  <button class="secundario" onclick="eliminarLibro(${i})">Eliminar</button></div></div>`).join("");
+ }
+ document.getElementById("totalCarrito").textContent=dineroMoneda(subtotal());
+ actualizarResumen();
+ calcularTotalFinal();
+}
+function actualizarResumen(){
+ document.getElementById("resumenCarrito").innerHTML=carrito.length?carrito.map(l=>`<p>${escapar(l.titulo)} × ${l.cantidad} — ${dineroMoneda(l.precio*l.cantidad)}</p>`).join(""):"<p>Sin libros.</p>";
+ document.getElementById("subtotalCompra").textContent=dineroMoneda(subtotal());
+}
+function irAComprar(){
+ if(!carrito.length){alert("Primero agrega libros al carrito.");irA("comprar");return}
+ irA("carrito");
+ document.getElementById("ticketCompra").style.display="none";
+ document.getElementById("formularioCompra").style.display="block";
+ actualizarResumen();
+ document.getElementById("formularioCompra").scrollIntoView({behavior:"smooth"});
+}
+
+// PRECIOS
+function actualizarPrecios(){
+ mostrarCatalogo();
+ mostrarCatalogoCompra();
+ mostrarRecomendaciones();
+ actualizarCarrito();
+ const mensaje="Moneda seleccionada: "+nombresMonedas[monedaSeleccionada]+" ("+monedaSeleccionada+").";
+ document.getElementById("estadoCambio").textContent=mensaje;
+ document.getElementById("estadoCambioCheckout").textContent=mensaje;
+}
+function calcularTotalFinal(){
+ const envio=Number(document.getElementById("envio").value||0);
+ const sub=subtotal();
+ document.getElementById("subtotalFinal").textContent=dineroMoneda(sub);
+ document.getElementById("envioFinal").textContent=dineroMoneda(envio);
+ document.getElementById("totalFinal").textContent=dineroMoneda(sub+envio);
+ calcularMensualidad();
+}
+function mostrarPago(){
+ const mapa={tarjeta:"datosTarjeta",transferencia:"datosTransferencia",paypal:"datosPaypal",efectivo:"datosEfectivo",credito:"datosCredito"};
+ Object.values(mapa).forEach(id=>document.getElementById(id).hidden=true);
+ const pago=document.getElementById("formaPago").value;
+ if(mapa[pago])document.getElementById(mapa[pago]).hidden=false;
+ calcularMensualidad();
+}
+function calcularMensualidad(){
+ const elemento=document.getElementById("mensualidad");
+ if(document.getElementById("formaPago").value!=="credito"){elemento.textContent="";return}
+ const plazo=Number(document.getElementById("plazo").value);
+ const total=subtotal()+Number(document.getElementById("envio").value||0);
+ elemento.textContent="Pago mensual aproximado: "+dineroMoneda(total/plazo)+".";
+}
+
+// VALIDACIÓN PROPIA: evita que el navegador bloquee la generación del ticket.
+function validarFormulario(){
+ const campos=[
+  {id:"nombre",nombre:"nombre completo"},
+  {id:"correo",nombre:"correo electrónico"},
+  {id:"telefono",nombre:"teléfono"},
+  {id:"direccion",nombre:"dirección"},
+  {id:"ciudad",nombre:"ciudad"},
+  {id:"cp",nombre:"código postal"},
+  {id:"formaPago",nombre:"forma de pago"}
+ ];
+
+ document.querySelectorAll(".error-dato").forEach(el=>el.classList.remove("error-dato"));
+
+ for(const campo of campos){
+  const elemento=document.getElementById(campo.id);
+  const valor=elemento.value.trim();
+
+  if(!valor){
+   elemento.classList.add("error-dato");
+   elemento.focus();
+   alert("Por favor, completa el campo: "+campo.nombre+".");
+   return false;
+  }
+ }
+
+ const correo=document.getElementById("correo");
+ const patronCorreo=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ if(!patronCorreo.test(correo.value.trim())){
+  correo.classList.add("error-dato");
+  correo.focus();
+  alert("Escribe un correo electrónico válido.");
+  return false;
+ }
+
+ const telefono=document.getElementById("telefono");
+ const numeros=telefono.value.replace(/\D/g,"");
+ if(numeros.length<10){
+  telefono.classList.add("error-dato");
+  telefono.focus();
+  alert("El teléfono debe tener al menos 10 dígitos.");
+  return false;
+ }
+
+ if(!carrito.length){
+  alert("Tu carrito está vacío. Agrega al menos un libro.");
+  return false;
+ }
+
+ return true;
+}
+
+// GENERAR TICKET
+function generarTicket(){
+ try{
+  if(!carrito.length){
+   alert("No hay libros en el carrito.");
+   return;
+  }
+
+  const nombre=document.getElementById("nombre").value.trim();
+  const correo=document.getElementById("correo").value.trim();
+  const telefono=document.getElementById("telefono").value.trim();
+  const direccion=document.getElementById("direccion").value.trim();
+  const ciudad=document.getElementById("ciudad").value.trim();
+  const cp=document.getElementById("cp").value.trim();
+  const pago=document.getElementById("formaPago").value;
+
+  const metodos={
+   tarjeta:"Tarjeta de crédito o débito",
+   transferencia:"Transferencia bancaria",
+   paypal:"PayPal",
+   efectivo:"Efectivo al recoger",
+   credito:"Compra a crédito"
+  };
+
+  const folio="LUA-"+Date.now().toString().slice(-8);
+  const fecha=new Date().toLocaleString("es-MX",{dateStyle:"long",timeStyle:"short"});
+  const sub=subtotal();
+  const costoEnvio=Number(document.getElementById("envio").value);
+  const total=sub+costoEnvio;
+
+  const productos=carrito.map(l=>`
+   <tr><td>${escapar(l.titulo)}</td><td>${l.cantidad}</td><td>${dineroMoneda(l.precio*l.cantidad)}</td></tr>
+  `).join("");
+
+  const ticket=document.getElementById("ticketCompra");
+
+  ticket.innerHTML=`
+  <div class="ticket">
+   <div class="ticket-encabezado">
+    <h2>LUAHEMA</h2>
+    <p><strong>EL MUNDO DE LOS LIBROS</strong></p>
+    <p>Tu rincón favorito para descubrir historias</p>
+    <span class="ticket-estado">✓ COMPRA REALIZADA</span>
+    <h3>¡Gracias por tu compra!</h3>
+    <p>Tu próxima historia comienza aquí.</p>
+   </div>
+
+   <div class="ticket-datos">
+    <p><strong>Folio:</strong> ${folio}</p>
+    <p><strong>Fecha:</strong> ${fecha}</p>
+    <p><strong>Cliente:</strong> ${escapar(nombre)}</p>
+    <p><strong>Correo:</strong> ${escapar(correo)}</p>
+    <p><strong>Teléfono:</strong> ${escapar(telefono)}</p>
+   </div>
+
+   <div class="ticket-datos">
+    <h3>Datos de entrega</h3>
+    <p><strong>Dirección:</strong> ${escapar(direccion)}</p>
+    <p><strong>Ciudad:</strong> ${escapar(ciudad)}</p>
+    <p><strong>Código postal:</strong> ${escapar(cp)}</p>
+   </div>
+
+   <h3>Detalle de los libros</h3>
+   <table class="ticket-productos">
+    <thead><tr><th>Libro</th><th>Cant.</th><th>Importe</th></tr></thead>
+    <tbody>${productos}</tbody>
+   </table>
+
+   <div class="ticket-datos">
+    <p><strong>Método de pago:</strong> ${escapar(metodos[pago]||pago)}</p>
+    <p><strong>Moneda:</strong> ${monedaSeleccionada}</p>
+   </div>
+
+   <div class="ticket-total">
+    <p><span>Subtotal:</span><strong>${dineroMoneda(sub)}</strong></p>
+    <p><span>Envío:</span><strong>${dineroMoneda(costoEnvio)}</strong></p>
+    <hr>
+    <h2>TOTAL: ${dineroMoneda(total)}</h2>
+   </div>
+
+   <div class="ticket-final">
+    <h3>¡Gracias por elegir LUAHEMA!</h3>
+    <p>Esperamos que disfrutes cada página de tu nueva lectura.</p>
+    <p><strong>El Mundo de los Libros</strong></p>
+    <p>© 2026 Luahema</p>
+    <p><small>Comprobante de demostración. No acredita un pago real ni confirma un pedido enviado.</small></p>
+   </div>
+  </div>
+
+  <div class="no-imprimir" style="text-align:center;margin:20px">
+   <button onclick="window.print()">🖨 Imprimir ticket</button>
+   <button class="secundario" onclick="descargarTicket()">Descargar ticket</button>
+   <button class="secundario" onclick="nuevaCompra()">Nueva compra</button>
+  </div>`;
+
+  // Mostrar la sección del carrito y el ticket.
+  document.querySelectorAll(".pagina").forEach(p=>p.classList.remove("activa"));
+  document.getElementById("carrito").classList.add("activa");
+  document.querySelectorAll(".navbar a").forEach(a=>a.classList.toggle("activo",a.dataset.pagina==="carrito"));
+
+  document.getElementById("formularioCompra").style.display="none";
+  ticket.style.display="block";
+  history.replaceState(null,"","#carrito");
+
+  // Desplazar la pantalla hasta el ticket.
+  window.scrollTo({top:0,behavior:"smooth"});
+  setTimeout(()=>ticket.scrollIntoView({behavior:"smooth",block:"start"}),250);
+
+ }catch(error){
+  console.error("Error al generar el ticket:",error);
+  alert("Ocurrió un error al generar el ticket. Revisa la consola del navegador.");
+ }
+}
+
+// DESCARGAR TICKET
+function descargarTicket(){
+ const elemento=document.querySelector("#ticketCompra .ticket");
+ if(!elemento){alert("No hay un ticket para descargar.");return}
+ const estilos=Array.from(document.querySelectorAll("style")).map(s=>s.innerHTML).join("\n");
+ const documento=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Ticket LUAHEMA</title><style>${estilos}</style></head><body>${elemento.outerHTML}</body></html>`;
+ const archivo=new Blob([documento],{type:"text/html;charset=utf-8"});
+ const url=URL.createObjectURL(archivo);
+ const enlace=document.createElement("a");
+ enlace.href=url;
+ enlace.download="Ticket-LUAHEMA.html";
+ document.body.appendChild(enlace);
+ enlace.click();
+ enlace.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+// NUEVA COMPRA
+function nuevaCompra(){
+ carrito=[];
+ actualizarCarrito();
+ document.getElementById("formPedido").reset();
+ document.getElementById("ticketCompra").innerHTML="";
+ document.getElementById("ticketCompra").style.display="none";
+ document.getElementById("formularioCompra").style.display="none";
+ monedaSeleccionada="MXN";
+ document.getElementById("moneda").value="MXN";
+ document.getElementById("monedaCheckout").value="MXN";
+ actualizarPrecios();
+ mostrarPago();
+ irA("comprar");
+}
+
+// CANCELAR
+function cancelarCompra(){
+ if(confirm("¿Quieres cancelar el formulario de compra?")){
+  document.getElementById("formularioCompra").style.display="none";
+  document.getElementById("formPedido").reset();
+  mostrarPago();
+  calcularTotalFinal();
+ }
+}
+
+// EVENTOS
+document.getElementById("formPedido").addEventListener("submit",function(e){
+ e.preventDefault();
+ e.stopPropagation();
+
+ if(!validarFormulario())return;
+
+ // Generar el ticket directamente después de validar.
+ generarTicket();
+});
+
+document.getElementById("busqueda").addEventListener("input",mostrarCatalogo);
+document.getElementById("filtroGenero").addEventListener("change",mostrarCatalogo);
+document.getElementById("moneda").addEventListener("change",cambiarMoneda);
+document.getElementById("monedaCheckout").addEventListener("change",cambiarMonedaCheckout);
+document.getElementById("envio").addEventListener("change",calcularTotalFinal);
+document.getElementById("formaPago").addEventListener("change",mostrarPago);
+document.getElementById("plazo").addEventListener("change",calcularMensualidad);
+
+// INICIALIZACIÓN
+mostrarCatalogo();
+mostrarCatalogoCompra();
+mostrarRecomendaciones();
+mostrarDestacados();
+mostrarAutores();
+actualizarCarrito();
+mostrarPago();
+cargarTasasCambio();
+
+const inicial=location.hash.slice(1);
+if(inicial&&document.getElementById(inicial)?.classList.contains("pagina"))irA(inicial);
+</script>
+</body>
+</html>
